@@ -38,17 +38,23 @@ else
             version=$(echo $pkg  | rev | cut -d- -f2  | rev)
             release=$(echo $pkg  | rev | cut -d- -f1  | cut -d. -f2- | rev)
             workdir='japan.proximity.on.ca/kojifiles/packages/'$package\/$version\/$release'/src/'
-            wget -r -l1 --no-parent -A.rpm $workdir
+            wget -P /tmp -r -l1 --no-parent -A.rpm $workdir
             found=$?
+            cd /tmp/$workdir
         fi
 
         if [ $found -eq 0 ]; then
-            rpm2cpio $workdir/*rpm | cpio -idmv
+            rpm2cpio *rpm | cpio -idmv
             spec=$(ls -tu *.spec | tail -1)
             rpmdev-bumpspec -c "$2" $spec
             cp -Rf * ~/rpmbuild/SOURCES/
             newSRPM=$(rpmbuild -bs $spec | awk '{print $2}')
+                                                                      #--scratch for testing
             nohup koji -s 'http://japan.proximity.on.ca/kojihub' build --scratch "$3" "$newSRPM" > /dev/null 2>&1
         fi
+
+        rm -rf $workdir
     done
+    
+    rm -rf /tmp/japan.proximity.on.ca/
 fi
