@@ -50,7 +50,7 @@ else
             cp -Rf * ~/rpmbuild/SOURCES/
             newSRPM=$(rpmbuild -bs $spec | awk '{print $2}')
                                                                       #--scratch for testing
-            nohup koji -s 'http://japan.proximity.on.ca/kojihub' build --scratch "$3" "$newSRPM" > /dev/null 2>&1
+            nohup koji -s 'http://japan.proximity.on.ca/kojihub' build "$3" "$newSRPM" > /dev/null 2>&1
         fi
 
         rm -rf $workdir
