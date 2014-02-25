@@ -35,8 +35,8 @@ else
 
         if [ $download -eq 1 ]; then
             package=$(echo $spkg | rev | cut -d- -f3- | rev)
-            version=$(echo $spkg | rev | cut -d- -f2  | rev)
-            release=$(echo $spkg | rev | cut -d- -f1  | cut -d. -f3- | rev)
+            version=$(echo $pkg  | rev | cut -d- -f2  | rev)
+            release=$(echo $pkg  | rev | cut -d- -f1  | cut -d. -f2- | rev)
             workdir='japan.proximity.on.ca/kojifiles/packages/'$package\/$version\/$release'/src/'
             wget -r -l1 --no-parent -A.rpm $workdir
             found=$?
