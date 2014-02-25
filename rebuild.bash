@@ -4,6 +4,7 @@
 # Author: Christopher Markieta
 
 download=0
+workdir=$(pwd)
 
 while getopts ":d:" o; do
     case "${o}" in
@@ -21,20 +22,22 @@ elif [ -z "$2" ]; then
 elif [ -z "$3" ]; then
     echo 'Missing last argument'
 else
+    # SRPM provided
     if [[ $1 = *.rpm ]]; then
         src=$1
+    # List of packages
     else
         src=$(cat $1)
     fi 
 
     echo -e "$src" | while read pkg; do
         found=0
-        workdir='.'
         package=$(echo $pkg | rev | cut -d- -f3- | rev)
         spkg=$(repoquery --whatprovides -s $package | head -1)
 
+        # Download option enabled
         if [ $download -eq 1 ]; then
-            package=$(echo $spkg | rev | cut -d- -f3- | rev)
+            package=$(echo $spkg | rev | cut -d- -f3- | rev) # Repoclosure name
             version=$(echo $pkg  | rev | cut -d- -f2  | rev)
             release=$(echo $pkg  | rev | cut -d- -f1  | cut -d. -f2- | rev)
             workdir='japan.proximity.on.ca/kojifiles/packages/'$package\/$version\/$release'/src/'
@@ -43,6 +46,7 @@ else
             cd /tmp/$workdir
         fi
 
+        # SRPM was found
         if [ $found -eq 0 ]; then
             rpm2cpio *rpm | cpio -idmv
             spec=$(ls -tu *.spec | tail -1)
